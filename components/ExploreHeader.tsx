@@ -3,6 +3,7 @@ import React, { useRef, useState } from 'react'
 import { Link } from 'expo-router'
 import { Ionicons, MaterialIcons } from '@expo/vector-icons'
 import Colors from '@/constants/Colors'
+import * as Haptics from 'expo-haptics'
 
 const categories = [
     {
@@ -35,12 +36,30 @@ const categories = [
     },
 ]
 
-const ExploreHeader = () => {
+interface Props {
+    onCategoryChanged: (category: string) => void;
+}
+
+const ExploreHeader = ({ onCategoryChanged }: Props) => {
+    const scrollRef = useRef<ScrollView | null>(null);
     const itemsRef = useRef<Array<TouchableOpacity | null>>([]);
     const [activeIndex, setActiveIndex] = useState(0);
 
     const selectCategory = (index: number) => {
+        const selected = itemsRef.current[index];
         setActiveIndex(index);
+
+        selected?.measure((x) => {
+            scrollRef.current?.scrollTo({
+                x: x - 16,
+                y: 0,
+                animated: true,
+            });
+        });
+
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+        onCategoryChanged(categories[index].name);
     }
 
     return (
@@ -63,11 +82,12 @@ const ExploreHeader = () => {
                 </View>
 
                 <ScrollView
+                    ref={scrollRef}
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={{
                         alignItems: 'center',
-                        gap: 20,
+                        gap: 30,
                         paddingHorizontal: 16,
                     }}>
                     {categories.map((item, index) => (
