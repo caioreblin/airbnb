@@ -15,7 +15,6 @@ const Listings = ({ listings: items, category }: Props) => {
     const listRef = useRef<FlatList>(null);
 
     useEffect(() => {
-        console.log('Listings:', items.length);
         setLoading(true);
 
         setTimeout(() => {
@@ -60,9 +59,6 @@ const Listings = ({ listings: items, category }: Props) => {
                 renderItem={renderRow}
                 ref={listRef}
                 data={loading ? [] : items}
-                initialNumToRender={10}
-                maxToRenderPerBatch={10}
-                windowSize={5}
             />
         </View>
     )
